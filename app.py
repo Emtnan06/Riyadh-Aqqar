@@ -89,7 +89,7 @@ st.markdown(
 st.markdown(
     """
     <div class="content">
-        <p>بداية بنوريك تقسيم جهات الرياض ومتوسط الاسعار</p>
+        <p>بداية بنوريك تقسيم جهات الرياض </p>
     </div>
     """,
     unsafe_allow_html=True
