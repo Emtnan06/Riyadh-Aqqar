@@ -113,11 +113,11 @@ st.markdown(
 
 col1, col2 = st.columns([1, 4])  
 with col2:
-    st.image("Photo/NEC.png", width=1050)  
+    st.image("Photo/MNCSME.png", width=1050)  
 
 col1, col2 = st.columns([1, 3])  
 with col2:
-    st.image("Photo/WS.png", width=900)  
+    st.image("Photo/MWSME.png", width=900)  
 
 # Land Prices Section
 st.markdown(
@@ -131,11 +131,11 @@ st.markdown(
 
 col1, col2 = st.columns([1, 4])  
 with col2:
-    st.image("Photo/MNCS.png", width=1050)  
+    st.image("Photo/MNECE.png", width=1050)  
 
 col1, col2 = st.columns([1, 3])  
 with col2:
-    st.image("Photo/MWS.png", width=700)  
+    st.image("Photo/MSWE.png", width=800)  
 
 # Apartment Prices Section
 st.markdown(
