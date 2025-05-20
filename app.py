@@ -113,11 +113,11 @@ st.markdown(
 
 col1, col2 = st.columns([1, 4])  
 with col2:
-    st.image("Photo/MNCSME.png", width=1050)  
+    st.image("Photo/NEC.png", width=1050)  
 
 col1, col2 = st.columns([1, 3])  
 with col2:
-    st.image("Photo/MWSME.png", width=900)  
+    st.image("Photo/WS.png", width=900)  
 
 # Land Prices Section
 st.markdown(
@@ -131,11 +131,11 @@ st.markdown(
 
 col1, col2 = st.columns([1, 4])  
 with col2:
-    st.image("Photo/MNECE.png", width=1050)  
+    st.image("Photo/MNCS.png", width=1050)  
 
 col1, col2 = st.columns([1, 3])  
 with col2:
-    st.image("Photo/MSWE.png", width=800)  
+    st.image("Photo/MWS.png", width=700)  
 
 # Apartment Prices Section
 st.markdown(
@@ -194,6 +194,30 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+
+
+# Load the datasets
+@st.cache_data
+def load_villa_data():
+    villa_file = "Data/Riyadh_Aqqar.xlsx"
+    df_villa = pd.read_excel(villa_file, sheet_name="Villas")
+    df_villa = df_villa[['الحي', 'السعر الاجمالي']].dropna()
+    df_villa.rename(columns={'الحي': 'neighbourhood', 'السعر الاجمالي': 'price'}, inplace=True)
+    df_villa['price'] = pd.to_numeric(df_villa['price'], errors='coerce')
+    return df_villa.dropna()
+
+@st.cache_data
+def load_apartment_data():
+    apt_file = "Data/Riyadh_Aqqar.xlsx"
+    df_apt = pd.read_excel(apt_file, sheet_name="Apartments")
+    df_apt = df_apt[['الحي', 'السعر الاجمالي']].dropna()
+    df_apt.rename(columns={'الحي': 'district', 'السعر الاجمالي': 'price'}, inplace=True)
+    df_apt['price'] = pd.to_numeric(df_apt['price'], errors='coerce')
+    return df_apt.dropna()
+
+villa_data = load_villa_data()
+apartment_data = load_apartment_data()
+
 # Conclusion Section
 st.markdown(
     """
@@ -207,6 +231,79 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+# Streamlit UI
+st.markdown(
+    """
+    <div style='background-color: #f8f5f040; padding: 20px; border-radius: 12px; border: 2px solid #7a5536; text-align: right;'>
+        <h1 style='color: #7a5536; margin-bottom: 10px;'> والحين جاء دورك تختار بيت عمرك</h1>
+        <p style='color: #7a5536; font-size: 18px;'>دخل ميزانيتك ونوع العقار، وبنقترح لك حي تشتري فيه بالرياض.</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+with st.container():
+    st.markdown(
+        """
+        <div style='background-color: #f8f5f040; padding: 20px; border-radius: 12px; border: 2px solid #7a5536; text-align: right;'>
+            <h3 style='color: #7a5536;'>🔍 حدد نوع العقار وميزانيتك</h3>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    property_type = st.radio("", ["فيلا", "شقة"], horizontal=True, label_visibility="collapsed")
+
+    # مدى الأسعار حسب النوع
+    if property_type == "شقة":
+        min_price, max_price = apartment_data['price'].min(), apartment_data['price'].max()
+    else:
+        min_price, max_price = villa_data['price'].min(), villa_data['price'].max()
+
+    st.markdown(
+        f"""
+        <div style='text-align: right; color: #7a5536; font-size: 16px; margin-top: 10px;'>
+            💰 الأسعار لـ <strong>{property_type}</strong>: من {min_price:,.0f} إلى {max_price:,.0f} ريال
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    default_budget = max(min_price, 500000) if property_type == "شقة" else max(min_price, 1000000)
+    budget = st.number_input("ميزانيتك؟", min_value=0, value=int(default_budget), step=50000)
+
+# تصفية البيانات
+if property_type == "فيلا":
+    filtered_data = villa_data[villa_data['price'] <= budget]
+    location_col = 'neighbourhood'
+else:
+    filtered_data = apartment_data[apartment_data['price'] <= budget]
+    location_col = 'district'
+
+# النتيجة
+if filtered_data.empty:
+    st.markdown(
+        """
+        <div style='text-align: right; background-color: #f8d7da; color: #842029; padding: 15px; border-radius: 10px; border: 1px solid #f5c2c7; font-size: 20px;'>
+            ما فيه شي يناسب ميزانيتك. جرّب تزود الميزانية أو غيّر النوع.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+else:
+    best_neighborhood = filtered_data.groupby(location_col)['price'].median().idxmax()
+    st.markdown(
+        f"""
+        <div style='text-align: right; background-color: #cdc8c840; color: #7a5536; padding: 20px; border-radius: 12px; border: 2px solid #7a5536; font-size: 22px;'>
+             <strong>أنسب حي لك:</strong> {best_neighborhood}<br>
+            <span style='font-size: 18px;'>(حسب متوسط السعر المتاح لميزانيتك)</span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+
 
 # Navbar in the footer
 st.markdown(
@@ -215,4 +312,7 @@ st.markdown(
     </div>
     """, unsafe_allow_html=True
 )
+
+
+
 
