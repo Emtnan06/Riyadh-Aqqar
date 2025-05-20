@@ -200,7 +200,7 @@ st.markdown(
 @st.cache_data
 def load_villa_data():
     villa_file = "Data/Riyadh_Aqqar.xlsx"
-    df_villa = pd.read_excel(villa_file, sheet_name="Villas")
+    df_villa = pd.read_excel(villa_file, sheet_name="Villas (الفلل)")
     df_villa = df_villa[['الحي', 'السعر الاجمالي']].dropna()
     df_villa.rename(columns={'الحي': 'neighbourhood', 'السعر الاجمالي': 'price'}, inplace=True)
     df_villa['price'] = pd.to_numeric(df_villa['price'], errors='coerce')
@@ -209,7 +209,7 @@ def load_villa_data():
 @st.cache_data
 def load_apartment_data():
     apt_file = "Data/Riyadh_Aqqar.xlsx"
-    df_apt = pd.read_excel(apt_file, sheet_name="Apartments")
+    df_apt = pd.read_excel(apt_file, sheet_name="Apartments (الشقق)")
     df_apt = df_apt[['الحي', 'السعر الاجمالي']].dropna()
     df_apt.rename(columns={'الحي': 'district', 'السعر الاجمالي': 'price'}, inplace=True)
     df_apt['price'] = pd.to_numeric(df_apt['price'], errors='coerce')
